@@ -38,8 +38,6 @@ app.get('/', function(req, res) {
 app.post('/api/shorturl', async(req,res)=>{
   // 
   const originalUrl = req.body.url; // Get the original URL from the request body
- 
-  
   try {
     const urlObj= new URL(originalUrl);
     if(!urlObj.protocol.startsWith('http')||!urlObj.protocol.startsWith('https')) { // Check if the URL starts with http or https
@@ -47,8 +45,8 @@ app.post('/api/shorturl', async(req,res)=>{
     }
   const shortUrl = id++; // Increment the ID for each new URL
   res.json({
-    originalUrl: originalUrl,
-    shortUrl: id
+    original_url: originalUrl,
+    short_url: id
   })
 }catch(error){
     return res.json({ error: 'Invalid URL' });
