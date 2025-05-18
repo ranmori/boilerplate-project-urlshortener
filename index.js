@@ -40,10 +40,11 @@ app.post('/api/shorturl', async(req,res)=>{
   const originalUrl = req.body.url; // Get the original URL from the request body
   try {
     const urlObj= new URL(originalUrl);
-    if(!urlObj.protocol.startsWith('http')||!urlObj.protocol.startsWith('https')) { // Check if the URL starts with http or https
-      return res.status(400).json({ error: 'Invalid URL' });
+    if (urlObj.protocol !== 'http:' && urlObj.protocol !== 'https:') {
+      throw new Error('Invalid protocol');
     }
   const shortUrl = id++; // Increment the ID for each new URL
+  urlDatabase[shorturl] = originalUrl;
   res.json({
     original_url: originalUrl,
     short_url: id
@@ -52,7 +53,7 @@ app.post('/api/shorturl', async(req,res)=>{
     return res.json({ error: 'Invalid URL' });
   }
 })
-app.get('/api/shorturl/<short_url>',async(req, res)=>{
+app.get('/api/shorturl/:short_url',async(req, res)=>{
   const short_url = req.params.short_url;
 
   const originalUrl = urlDatabase[short_url]; // Retrieve the original URL from the database
