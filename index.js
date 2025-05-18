@@ -35,36 +35,39 @@ app.get('/', function(req, res) {
   
 //   })
 // })
-app.post('/api/shorturl', async(req,res)=>{
-  // 
-  const originalUrl = req.body.url; // Get the original URL from the request body
+app.post('/api/shorturl', (req, res) => {
+  const originalUrl = req.body.url;
+
   try {
-    const urlObj= new URL(originalUrl);
+    const urlObj = new URL(originalUrl);
     if (urlObj.protocol !== 'http:' && urlObj.protocol !== 'https:') {
       throw new Error('Invalid protocol');
     }
-  const shortUrl = id++; // Increment the ID for each new URL
-  urlDatabase[shorturl] = originalUrl;
-  res.json({
-    original_url: originalUrl,
-    short_url: id
-  })
-}catch(error){
-    return res.json({ error: 'Invalid URL' });
+
+    const shortUrl = id++;
+    urlDatabase[shortUrl] = originalUrl;
+
+    res.json({
+      original_url: originalUrl,
+      short_url: shortUrl
+    });
+
+  } catch (error) {
+    res.json({ error: 'invalid url' }); // <-- lowercase 'invalid url' is what FCC expects
   }
-})
-app.get('/api/shorturl/:short_url',async(req, res)=>{
-  const short_url = req.params.short_url;
+});
 
-  const originalUrl = urlDatabase[short_url]; // Retrieve the original URL from the database
+app.get('/api/shorturl/:short_url', (req, res) => {
+  const short_url = parseInt(req.params.short_url); // fix type mismatch
+  const originalUrl = urlDatabase[short_url];
 
-  if(originalUrl){ // Check if the original URL exists
-    return res.redirect(originalUrl)
-  }else{ // If the original URL does not exist
-    return res.json({error: 'No short URL found for the given input' });
+  if (originalUrl) {
+    res.redirect(originalUrl);
+  } else {
+    res.json({ error: 'No short URL found for the given input' });
   }
+});
 
-})
 
 // Your first API endpoint
 app.get('/api/hello', function(req, res) {
